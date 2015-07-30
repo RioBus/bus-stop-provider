@@ -1,0 +1,30 @@
+{
+  "name": "busStopProvider",
+  "version": "1.0.0",
+  "description": "Retrieves bus stop information from the external server and saves to repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RioBus/bus-stop-provider.git"
+  },
+  "keywords": [
+    "bus",
+    "stop",
+    "provider",
+    "javascript",
+    "nodejs",
+    "riobus"
+  ],
+  "author": "Leticia Freire",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RioBus/bus-stop-provider/issues"
+  },
+  "homepage": "https://github.com/RioBus/bus-stop-provider",
+  "dependencies": {
+    "request": "^2.60.0"
+  }
+}
