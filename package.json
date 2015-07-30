@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/RioBus/bus-stop-provider",
   "dependencies": {
+    "mongodb": "^2.0.39",
     "request": "^2.60.0"
   }
 }

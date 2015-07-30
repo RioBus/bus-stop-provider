@@ -1,5 +1,7 @@
 var request = require('request');
 var BusStop = require("./busStop");
+var MongoClient = require('mongodb').MongoClient;
+ 
 
 function getBusStop(line, callback) {
 	var testeLink = "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha" + line + "-paradas.csv"
@@ -31,4 +33,18 @@ function prepareData(data){
 	return stops;
 }
 
-module.exports = getBusStop;
+function saveToDataBase(stops, callback) {
+	MongoClient.connect('mongodb://riobus:riobus@mongo:27017/riobus', function(err, db) {
+		if(err) callback(err);
+		var collection = db.collection("bus_stop");
+		collection.insertMany(stops, function(error, docs){
+			if(error) callback(error);
+			else callback(docs);
+		});
+	})
+}
+
+module.exports = {
+	getBusStop:getBusStop,
+	saveToDataBase:saveToDataBase
+};
