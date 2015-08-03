@@ -1,6 +1,7 @@
 var request = require('request');
 var BusStop = require("./busStop");
 var MongoClient = require('mongodb').MongoClient;
+var dbConfig = require("./config").dataBaseConfig;
  
 
 function getBusStop(line, callback) {
@@ -12,6 +13,27 @@ function getBusStop(line, callback) {
 			
   		}
 	})
+}
+
+function getLines(callback){
+	var link = "http://rest.riob.us/v3/itinerary";
+	request(link, function (error, response, body) {
+  		if (!error && response.statusCode == 200) {
+			var output = prepareStop(body);
+    		callback(output);
+			
+  		}
+	})
+}
+
+function prepareStop(line){
+	var data = JSON.parse(line);
+	var lines = [];
+	data.forEach(function(obj){
+		lines.push(obj.line);
+	})
+	
+	return lines;
 }
 
 function prepareData(data){
@@ -34,9 +56,10 @@ function prepareData(data){
 }
 
 function saveToDataBase(stops, callback) {
-	MongoClient.connect('mongodb://riobus:riobus@mongo:27017/riobus', function(err, db) {
+	MongoClient.connect('mongodb://' + dbConfig.user + ':' + dbConfig.pass + '@' + dbConfig.host + ':' + dbConfig.port + '/' + dbConfig.dataBaseName, function(err, db) {
 		if(err) callback(err);
 		var collection = db.collection("bus_stop");
+		collection.remove({}, function(){});
 		collection.insertMany(stops, function(error, docs){
 			if(error) callback(error);
 			else callback(docs);
@@ -46,5 +69,6 @@ function saveToDataBase(stops, callback) {
 
 module.exports = {
 	getBusStop:getBusStop,
-	saveToDataBase:saveToDataBase
+	saveToDataBase:saveToDataBase,
+	getLines:getLines
 };

@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run -it --rm --link mongo:mongo -v $(pwd):/app -w /app --name riobus-stop bus-stop-provider /bin/bash
