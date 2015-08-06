@@ -1,50 +1,74 @@
 var request = require('request');
 var BusStop = require("./busStop");
 var MongoClient = require('mongodb').MongoClient;
+var dbConfig = require("./config").dataBaseConfig;
+var StopSpot = require("./stopSpot");
  
 
-function getBusStop(line, callback) {
-	var testeLink = "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha" + line + "-paradas.csv"
+function getBusStop(itinerary, callback) {
+	var testeLink = "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha" + itinerary.line + "-paradas.csv"
 	request(testeLink, function (error, response, body) {
   		if (!error && response.statusCode == 200) {
-			var output = prepareData(body);
-    		callback(output);
-			
+			var output = prepareData(body, itinerary.description);
+    		callback(output);	
+  		}
+		else{
+			callback(new BusStop(itinerary.line, itinerary.description, "desconhecido", []));
+		}
+	})
+}
+
+function getLines(callback){
+	var link = "http://rest.riob.us/v3/itinerary";
+	request(link, function (error, response, body) {
+  		if (!error && response.statusCode == 200) {
+			var output = prepareStop(body);
+    		callback(output);	
   		}
 	})
 }
 
-function prepareData(data){
+function prepareStop(line){
+	return JSON.parse(line);
+}
+
+function prepareData(data, description){
 	//var lines = data.replace("\r", "");
 	var lines = data.split("\r\n");
-	var stops = []; 
+	var spots = []; 
+	var lineBus, agency;
 	//linha,descricao,agencia,sequencia,latitude,longitude
 	for(var i = 1; i < lines.length; i++){
 		if(lines[i] === "") continue;
 		var line = lines[i].split(",");
-		var lineBus = line[0] + "";
-		var description = line[1];
-		var agency = line[2];
+		if(lineBus === undefined) lineBus = line[0] +"";
+		if(agency === undefined) agency = line[2];
 		var sequential = parseInt(line[3]);
 		var latitude = parseFloat(line[4].replace("\"", ""));
 		var longitude = parseFloat(line[5].replace("\"", ""));
-		stops.push(new BusStop(lineBus, description, agency, latitude, longitude, sequential));
+		//stops.push(new BusStop(lineBus, description, agency, latitude, longitude, sequential));
+		spots.push(new StopSpot(latitude, longitude, sequential));
 	}
-	return stops;
+	return new BusStop(lineBus, description, agency, spots);
 }
 
-function saveToDataBase(stops, callback) {
-	MongoClient.connect('mongodb://riobus:riobus@mongo:27017/riobus', function(err, db) {
-		if(err) callback(err);
+function startDataBase(callback){
+	MongoClient.connect('mongodb://' + dbConfig.user + ':' + dbConfig.pass + '@' + dbConfig.host + ':' + dbConfig.port + '/' + dbConfig.dataBaseName, function(err, db) {
+		if(err) callback(err, null);
 		var collection = db.collection("bus_stop");
-		collection.insertMany(stops, function(error, docs){
-			if(error) callback(error);
-			else callback(docs);
-		});
-	})
+		collection.remove({}, function(){});
+		callback(null, collection);
+	});
+}
+
+function saveToDataBase(stops, collection, callback) {
+	//if(stops.length == 0){console.log("entrei aqui"); process.exit();}
+	collection.insert(stops, callback);
 }
 
 module.exports = {
 	getBusStop:getBusStop,
-	saveToDataBase:saveToDataBase
+	saveToDataBase:saveToDataBase,
+	getLines:getLines,
+	startDataBase:startDataBase
 };
