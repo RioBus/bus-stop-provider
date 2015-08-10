@@ -8,6 +8,11 @@ var countTryLines = 0;
 var countStopsBus = 0;
 var countLine = 0;
 
+
+/**
+ * Takes every bus line that will be used
+ * @param {function} 
+ */
 getLines(function(lines){
 	console.log("peguei as linhas");
 	startDataBase(function(err, collection){

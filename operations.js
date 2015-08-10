@@ -4,7 +4,12 @@ var MongoClient = require('mongodb').MongoClient;
 var dbConfig = require("./config").dataBaseConfig;
 var StopSpot = require("./stopSpot");
  
-
+/**
+ * Gets the informations about bus line
+ * @param {string} itinerary
+ * @param {function} callback
+ * @return {BusStop}
+ */
 function getBusStop(itinerary, callback) {
 	var testeLink = "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha" + itinerary.line + "-paradas.csv"
 	request(testeLink, function (error, response, body) {
@@ -18,6 +23,11 @@ function getBusStop(itinerary, callback) {
 	})
 }
 
+/**
+ * Takes every bus line that will be used
+ * @param {function} callback
+ * @return {string} output
+ */
 function getLines(callback){
 	var link = "http://rest.riob.us/v3/itinerary";
 	request(link, function (error, response, body) {
@@ -28,10 +38,21 @@ function getLines(callback){
 	})
 }
 
+/**
+ * Breaks the line 
+ * @param {JSON} line
+ * @return {string}
+ */
 function prepareStop(line){
 	return JSON.parse(line);
 }
 
+/**
+ * Breaks the data in informations about bus line
+ * @param {string} data
+ * @param {string} description
+ * @return {BusStop}
+ */
 function prepareData(data, description){
 	//var lines = data.replace("\r", "");
 	var lines = data.split("\r\n");
@@ -52,6 +73,11 @@ function prepareData(data, description){
 	return new BusStop(lineBus, description, agency, spots);
 }
 
+/**
+ * Open the connection with database and clear the collection
+ * @param {function} callback
+ * @return {function(err, collection)}
+ */
 function startDataBase(callback){
 	MongoClient.connect('mongodb://' + dbConfig.user + ':' + dbConfig.pass + '@' + dbConfig.host + ':' + dbConfig.port + '/' + dbConfig.dataBaseName, function(err, db) {
 		if(err) callback(err, null);
@@ -61,6 +87,12 @@ function startDataBase(callback){
 	});
 }
 
+/**
+ * Insert the stops on database
+ * @param {BusStop} stops
+ * @param {db} collection
+ * @param {function} callback
+ */
 function saveToDataBase(stops, collection, callback) {
 	//if(stops.length == 0){console.log("entrei aqui"); process.exit();}
 	collection.insert(stops, callback);
