@@ -1,8 +1,8 @@
 /**
  * Stores the informations about every bus spot 
- * @param {float} latitude
- * @param {float} longitude
- * @param {int} sequential
+ * @param {number} latitude
+ * @param {number} longitude
+ * @param {number} sequential
  */
 var StopSpot = function(latitude, longitude, sequential){
 	this.latitude = latitude;
