@@ -98,10 +98,12 @@ function saveToDataBase(stops, collection, callback) {
 
 /**
  * Create a index for the collection
- * @param{any} collection
+ * @param {any} collection
+ * @param {JSON} config
+ * @param {function} callback
  */
-function createId(collection){
-	collection.ensureIndex({line: 1});
+function createId(collection, config, callback){
+	collection.ensureIndex(config, callback);
 }
 
 

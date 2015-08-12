@@ -48,7 +48,10 @@ getLines(function(lines){
 			
 		}
 		
-		createId(collection);
+		createId(collection, {"line":-1}, function(err, informationIndex){
+			if(err) console.log(err);
+			else console.log(informationIndex);
+		});
 	});
 	
 	
