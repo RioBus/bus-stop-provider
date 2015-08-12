@@ -3,6 +3,7 @@ var saveToDataBase = require("./operations").saveToDataBase;
 var BusStop = require("./busStop")
 var getLines = require("./operations").getLines;
 var startDataBase = require("./operations").startDataBase;
+var createId = require("./operations").createId;
 var count = 0;
 var countTryLines = 0;
 var countStopsBus = 0;
@@ -44,7 +45,10 @@ getLines(function(lines){
 				});
 			
 			});
+			
 		}
+		
+		createId(collection);
 	});
 	
 	

@@ -96,9 +96,19 @@ function saveToDataBase(stops, collection, callback) {
 	collection.insert(stops, callback);
 }
 
+/**
+ * Create a index for the collection
+ * @param{any} collection
+ */
+function createId(collection){
+	collection.ensureIndex({line: 1});
+}
+
+
 module.exports = {
 	getBusStop:getBusStop,
 	saveToDataBase:saveToDataBase,
 	getLines:getLines,
-	startDataBase:startDataBase
+	startDataBase:startDataBase,
+	createId:createId,
 };
