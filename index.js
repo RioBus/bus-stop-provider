@@ -46,27 +46,14 @@ getLines(function(lines){
 			
 			});
 			
+			createId(collection, {"line":-1}, function(err, informationIndex){
+				if(err) console.log(err);
+				else console.log(informationIndex);
+			});
+			
 		}
 		
-		createId(collection, {"line":-1}, function(err, informationIndex){
-			if(err) console.log(err);
-			else console.log(informationIndex);
-		});
 	});
 	
 	
 });
-//console.log("Salvei: " + count + " linhas");
-
-//var list = ["322", "298"];
-
-
-/*getBusStop("322", function(stops){
-	startDataBase(function(err){
-		console.log(err);
-	});
-	saveToDataBase(stops, function(response){
-		console.log(response);
-		console.log("["+ line + "]" + "Saved.");
-	})
-});	*/
