@@ -3,11 +3,17 @@ var saveToDataBase = require("./operations").saveToDataBase;
 var BusStop = require("./busStop")
 var getLines = require("./operations").getLines;
 var startDataBase = require("./operations").startDataBase;
+var createId = require("./operations").createId;
 var count = 0;
 var countTryLines = 0;
 var countStopsBus = 0;
 var countLine = 0;
 
+
+/**
+ * Takes every bus line that will be used
+ * @param {function} 
+ */
 getLines(function(lines){
 	console.log("peguei as linhas");
 	startDataBase(function(err, collection){
@@ -39,22 +45,15 @@ getLines(function(lines){
 				});
 			
 			});
+			
+			createId(collection, {"line":-1}, function(err, informationIndex){
+				if(err) console.log(err);
+				else console.log(informationIndex);
+			});
+			
 		}
+		
 	});
 	
 	
 });
-//console.log("Salvei: " + count + " linhas");
-
-//var list = ["322", "298"];
-
-
-/*getBusStop("322", function(stops){
-	startDataBase(function(err){
-		console.log(err);
-	});
-	saveToDataBase(stops, function(response){
-		console.log(response);
-		console.log("["+ line + "]" + "Saved.");
-	})
-});	*/
