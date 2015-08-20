@@ -9,51 +9,42 @@ var countTryLines = 0;
 var countStopsBus = 0;
 var countLine = 0;
 
+console.log("Retrieving lines data...");
 
 /**
  * Takes every bus line that will be used
  * @param {function} 
  */
 getLines(function(lines){
-	console.log("peguei as linhas");
+	var numberLines = lines.length;
+	console.log("Total amount of lines: " + numberLines);
 	startDataBase(function(err, collection){
 		if(err) console.log(err);
 		else{
-			var numberLines = lines.length;
-			console.log("Numero total de linhas: " + numberLines);
-
-
 			lines.forEach(function(line){
-			//console.log("pegando os pontos da linha " + line);
 				getBusStop(line, function(response){
 					if(response){
-						saveToDataBase(response, collection, function(err, response){
-							countLine++;
-							if(!err && response){
-								console.log("["+line.line+"] Saved.");
-							}
+						saveToDataBase(response, collection, function(err, output){
+							var counterDisplay = "("+ ++countLine + "/" + numberLines+")";
+							if(!err && output)
+								console.log("["+line.line+"] Saved.", counterDisplay);
 							else{
-								console.log("["+line.line+"] Not Saved.");
+								console.log("["+line.line+"] Not Saved.", counterDisplay);
 								console.log(err);
 							}
-							console.log(countLine + "/" + numberLines);
-							if(countLine === numberLines){process.exit();}
+							if(countLine === numberLines) process.exit();
 						});
-					} else {
-						console.log("["+line.line+"] Not retrieved.");
-					}
+					} else console.log("["+line.line+"] Not retrieved.");
 				});
 			
 			});
 			
-			createId(collection, {"line":-1}, function(err, informationIndex){
+			createId(collection, {"line": -1}, function(err, informationIndex){
 				if(err) console.log(err);
-				else console.log(informationIndex);
 			});
 			
 		}
 		
 	});
-	
 	
 });
