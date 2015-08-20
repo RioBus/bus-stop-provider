@@ -77,7 +77,11 @@ function prepareData(data, description){
  * @return {(err: Error, collection: any)=>void}
  */
 function startDataBase(callback){
-	MongoClient.connect('mongodb://' + dbConfig.user + ':' + dbConfig.pass + '@' + dbConfig.host + ':' + dbConfig.port + '/' + dbConfig.dataBaseName, function(err, db) {
+	var connString = (dbConfig.user && dbConfig.user!=="" && dbConfig.pass && dbConfig.pass!=="")?
+		dbConfig.user + ":" + dbConfig.pass + "@" + dbConfig.host + ":" + dbConfig.port + "/" + dbConfig.dataBaseName :
+		dbConfig.host + ":" + dbConfig.port + "/" + dbConfig.dataBaseName;
+	connString = "mongodb://" + connString;
+	MongoClient.connect(connString, function(err, db) {
 		if(err) callback(err, null);
 		var collection = db.collection("bus_stop");
 		collection.remove({}, function(){});
