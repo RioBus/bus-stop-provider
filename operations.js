@@ -1,8 +1,9 @@
 var request = require('request');
 var BusStop = require("./busStop");
 var MongoClient = require('mongodb').MongoClient;
-var dbConfig = require("./config").dataBaseConfig;
 var StopSpot = require("./stopSpot");
+var config = require("./config");
+var dbConfig = config.dataBaseConfig;
  
 /**
  * Gets the informations about bus line
@@ -10,7 +11,7 @@ var StopSpot = require("./stopSpot");
  * @param {function} callback
  */
 function getBusStop(itinerary, callback) {
-	var testeLink = "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha" + itinerary.line + "-paradas.csv"
+	var testeLink = config.busStopApiURL.replace("$$", itinerary.line);
 	request(testeLink, function (error, response, body) {
   		if (!error && response.statusCode == 200) {
 			var output = prepareData(body, itinerary.description);
@@ -27,8 +28,7 @@ function getBusStop(itinerary, callback) {
  * @param {function} callback
  */
 function getLines(callback){
-	var link = "http://rest.riob.us/v3/itinerary";
-	request(link, function (error, response, body) {
+	request(config.itineraryApiURL, function (error, response, body) {
   		if (!error && response.statusCode == 200) {
 			var output = prepareStop(body);
     		callback(output);	
@@ -65,9 +65,9 @@ function prepareData(data, description){
 		var sequential = parseInt(line[3]);
 		var latitude = parseFloat(line[4].replace("\"", ""));
 		var longitude = parseFloat(line[5].replace("\"", ""));
-		//stops.push(new BusStop(lineBus, description, agency, latitude, longitude, sequential));
 		spots.push(new StopSpot(latitude, longitude, sequential));
 	}
+	spots.sort(function(a, b){ return a.sequential - b.sequential; });
 	return new BusStop(lineBus, description, agency, spots);
 }
 
@@ -92,7 +92,6 @@ function startDataBase(callback){
  * @param {function} callback
  */
 function saveToDataBase(stops, collection, callback) {
-	//if(stops.length == 0){console.log("entrei aqui"); process.exit();}
 	collection.insert(stops, callback);
 }
 
