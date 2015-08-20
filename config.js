@@ -1,9 +1,11 @@
 module.exports = {
+	busStopApiURL: "http://dadosabertos.rio.rj.gov.br/apiTransporte/Apresentacao/csv/gtfs/onibus/paradas/gtfs_linha$$-paradas.csv",
+	itineraryApiURL: "http://rest.riob.us/v3/itinerary",
 	dataBaseConfig:{
 		user:"riobus",
 		pass:"riobus",
 		dataBaseName:"riobus",
-		host:"192.168.59.103",
+		host:"mongo",
 		port:"27017"
 	}
 };
