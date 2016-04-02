@@ -1,4 +1,5 @@
-FROM node:0.11.16
-#RUN npm install -g gulp mocha pm2
-RUN mkdir /app
+FROM node:5.7.0
+ADD . /app
 WORKDIR /app
+RUN npm install
+ENTRYPOINT npm start
